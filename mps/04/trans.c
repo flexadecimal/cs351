@@ -22,6 +22,53 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+  int bsize;
+  if (N == 32){
+    bsize = 8;
+  }
+  else if (N == 64){
+    bsize = 4;
+  }
+  else {
+    bsize = 17;
+  }
+
+  int i, j, k, l, temp, idx, diag = 0;
+  /* for square matrices, try to minimize diag accesses*/
+  if (N == M){
+    for (i = 0; i < N; i += bsize){
+      for (j = 0; j < N; j += bsize){
+	for (k = i; k < i+bsize && k < M; k++){
+	  for (l = j; l < j+bsize && l < N; l++){
+	    if (k != l){
+	      B[k][l] = A[l][k];
+	    }
+	    else {
+	      temp = A[l][k];
+	      idx = k;
+	      diag = 1;
+	    }
+	  }
+	  if (diag == 1){
+	    B[idx][idx] = temp;
+	    diag = 0;
+	  }
+	}
+      }
+    }
+  }
+  else {
+  for (i = 0; i < M; i += bsize){
+    for (j = 0; j < N; j += bsize){
+      /* tranpose block */
+      for (k = i; k < i+bsize && k < M; k++){
+	for (l = j; l < j+bsize && l < N; l++){
+	  B[k][l] = A[l][k];
+	  }
+	}
+      }
+  }
+  }
 }
 
 /* 
