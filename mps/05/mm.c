@@ -28,7 +28,7 @@
 #define NUM_SIZE_CLASSES 5
 #define MIN_BLK_SIZE 32
 /* pads a size with PADDING bytes - useful for realloc. if size is less than min block size, will substitute the min size */
-#define PADDING 128
+#define PADDING 16
 #define PAD(size) ((((size) < MIN_BLK_SIZE) ? MIN_BLK_SIZE : (size)) + PADDING)
 size_t min_class_size[] = {MIN_BLK_SIZE, 256, 512, 1024, 2048, INT_MAX};
 
